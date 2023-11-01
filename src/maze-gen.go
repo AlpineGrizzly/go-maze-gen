@@ -154,7 +154,7 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 	queue := []coord{}         /* Queue to hold cells to visit */
 
 	/* Randomly select a node */
-	rand_cell := start //coord{x: rand.Intn(dim_x), y: rand.Intn(dim_y )}
+	rand_cell := coord{x: rand.Intn(dim_x), y: rand.Intn(dim_y )}
 	var neigh_cell coord
 	var wall_cell coord
 	var temp_cell coord
