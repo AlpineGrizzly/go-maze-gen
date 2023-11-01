@@ -84,11 +84,10 @@ func get_wall(host coord, neighbor coord) coord {
  *
  * @return an unvisited neighbor of the cell passed in and the wall between the two
  */
-func get_unvisited_neighbor(visited []coord, cell coord, dim_x int, dim_y int) (coord, coord) {
+func get_unvisited_neighbor(visited []coord, cell coord, dim_x int, dim_y int) coord {
     neighbors := []coord{}
     chosen := coord{x: -1, y: -1}
-    wall := coord{x: -1, y: -1}
-    wall_size := 2
+    wall_size := 1
 
     /* Check all 4 neighbors to see if they are valid neighbors */
     /** (1,0) (-1,0) (0,1) (0,-1) */
@@ -118,10 +117,9 @@ func get_unvisited_neighbor(visited []coord, cell coord, dim_x int, dim_y int) (
     /* Randomly choose one of the unvisited neighbors */
     if len(neighbors) > 0 { 
         chosen = neighbors[rand.Intn(len(neighbors))] /* Neighbor */
-        wall = get_wall(cell, chosen) /* Wall value */
-        fmt.Println("Neighbor: ", chosen, "Wall: ", wall) 
+        fmt.Println("Neighbor: ", chosen) 
     }
-    return chosen, wall
+    return chosen
 }
 
 /**
@@ -165,31 +163,35 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
     /* Randomly select a node */
     rand_cell :=  start //coord{x: rand.Intn(dim_x), y: rand.Intn(dim_y )}
     neigh_cell := coord{}
-    wall_cell := coord{}
 
     maze[rand_cell.x][rand_cell.y] = " " // Clear the cell
 
-    for k := 0; k < 15; k++ { 
+    for k := 0; k < 50; k++ { 
         /* Push the node onto the queue */
         queue = enqueue(queue, rand_cell)
 
         /* Mark the cell as visited */
-        maze[rand_cell.x][rand_cell.y] = " "
         visited_cells = append(visited_cells, rand_cell)
-
+        
         /* Randomly select an adjacent cell of the node that has not been visited */
-        // NOTE may have to check for a null value in the future 
-        neigh_cell, wall_cell = get_unvisited_neighbor(visited_cells, rand_cell, dim_x, dim_y)
+        neigh_cell = get_unvisited_neighbor(visited_cells, rand_cell, dim_x, dim_y)
         
         /** If all neighbors have been visited */
-        if rand_cell.x == -1 && rand_cell.y == -1 { 
-            break
+        if neigh_cell.x == -1 && neigh_cell.y == -1 {     
+            fmt.Println(len(queue))
+            // Check if we have anything in our queue 
+            if len(queue) == 0 { 
+                break
+            }
+            // Continue to pop items off the queue until a node is encountered with at least one non visited neighbor
+            rand_cell, queue = dequeue(queue)
+            continue
         }
-        // Continue to pop items off the queue until a node is encountered with at least one non visited neighbor"
-        
-        /* Break the wall between the node and the neighbor */
-        maze[wall_cell.x][wall_cell.y] = " "
 
+        /* Break the wall between the node and the neighbor */
+        maze[rand_cell.x][rand_cell.y] = " "
+        maze[neigh_cell.x][neigh_cell.y] = " "
+        
         /* Assign the random cell value to the neighbor */
         rand_cell = neigh_cell
     }
