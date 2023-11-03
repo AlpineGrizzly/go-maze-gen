@@ -81,6 +81,14 @@ func clear_screen() {
 	cmd.Run()
 }
 
+/** Check if the cell is on the boundary of the maze */
+func is_edge_box(cell coord, dim_x int, dim_y int) bool {
+	if cell.x == 0 || cell.x == dim_x-1 || cell.y == 0 || cell.y == dim_y-1 {
+		return true
+	}
+	return false
+}
+
 /**
  * get_unvisited_neighbor
  *
@@ -101,22 +109,22 @@ func get_unvisited_neighbor(visited []coord, cell coord, dim_x int, dim_y int) (
 	/** (1,0) (-1,0) (0,1) (0,-1) */
 	// Manually checking cause im too lazy to think
 	check_cell := coord{cell.x + wall_size, cell.y}
-	if check_cell.x < dim_x && !is_visited(visited, check_cell) {
+	if check_cell.x < dim_x && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
 		neighbors = append(neighbors, check_cell)
 	}
 
 	check_cell = coord{cell.x - wall_size, cell.y}
-	if check_cell.x >= 0 && !is_visited(visited, check_cell) {
+	if check_cell.x >= 0 && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
 		neighbors = append(neighbors, check_cell)
 	}
 
 	check_cell = coord{cell.x, cell.y + wall_size}
-	if check_cell.y < dim_y && !is_visited(visited, check_cell) {
+	if check_cell.y < dim_y && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
 		neighbors = append(neighbors, check_cell)
 	}
 
 	check_cell = coord{cell.x, cell.y - wall_size}
-	if check_cell.y >= 0 && !is_visited(visited, check_cell) {
+	if check_cell.y >= 0 && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
 		neighbors = append(neighbors, check_cell)
 	}
 
@@ -152,7 +160,7 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 	rand.Seed(time.Now().UnixNano())
 
 	start := coord{x: 1, y: 1}
-	end := coord{x: dim_x - 1, y: dim_y - 1} /* Initialize for now, will take on a new value as we build maze */
+	var end coord
 
 	/** Generate maze with start and finish points */
 	for j := 0; j < dim_y; j++ {
@@ -203,7 +211,7 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 			if len(queue) == 0 {
 				break
 			}
-			end.y = rand_cell.y
+			end = rand_cell
 			continue
 		}
 

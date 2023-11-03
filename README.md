@@ -4,7 +4,6 @@ Go Program that generates mazes
 Cool resource for future go projects https://www.digitalocean.com/community/tutorials/how-to-build-and-install-go-programs
 
 ## BUGS
-- [ ] Mazes are sometimes unsolvable, could be something funky with the algorithm.
 ## TODO                                     
 - [ ] Allow for a player to be able to solve the mazes
 - [ ] Implement other maze generation algorithms that can be selected with a flag
@@ -14,11 +13,11 @@ Cool resource for future go projects https://www.digitalocean.com/community/tuto
 
 ## Usage
 ```sh
-# Generate a default maze of 100 by 50
+# Generate a default maze of 51 by 51
 ./maze-gen
 
 # Generate a maze with custom dimensions
-./maze-gen -x 50 -y 50
+./maze-gen -x 51 -y 51
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # >                     #                                                   #           #           X 
