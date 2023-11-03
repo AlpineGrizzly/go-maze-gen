@@ -12,6 +12,7 @@ Cool resource for future go projects https://www.digitalocean.com/community/tuto
 ## Requirements
 
 ## Usage
+```sh
 Usage of ./maze-gen:
   -s	Show maze being generated
   -x int
@@ -19,8 +20,8 @@ Usage of ./maze-gen:
   -y int
     	Y dimension of maze to be generated (default 25)
 
-```sh
 # Generate a default maze 
+./maze-gen
 # # # # # # # # # # # # # # # # # # # # # # # # # 
 # >     #       #       #                   #   # 
 #   #   #   #   #   #   # # # # # # # # #   #   # 
