@@ -191,8 +191,6 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 		/* Randomly select an adjacent cell of the node that has not been visited */
 		neigh_cell, wall_cell = get_unvisited_neighbor(visited_cells, rand_cell, dim_x, dim_y)
 
-		fmt.Println("Currently on ", rand_cell, " going to neigh_cell ", neigh_cell, "Breaking ", wall_cell)
-
 		/** If all neighbors have been visited */
 		if neigh_cell.x == -1 && neigh_cell.y == -1 {
 			for len(queue) > 0 {
@@ -222,8 +220,10 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 
 		/* Assign the random cell value to the neighbor */
 		rand_cell = neigh_cell
-		print_maze(maze, dim_x, dim_y)
-		time.Sleep(5 * time.Millisecond)
+		if *g_show_gen {
+			print_maze(maze, dim_x, dim_y)
+			time.Sleep(5 * time.Millisecond)
+		}
 	}
 	/* Set the start and end cells  */
 	fmt.Println("Start is ", start, " End is ", end)
@@ -244,13 +244,18 @@ func print_maze(maze [][]string, dim_x int, dim_y int) {
 	fmt.Println()
 }
 
+/* Global Variables */
+var g_show_gen *bool
+
 func main() {
-	var dim_x, dim_y int = 51, 51
+	var dim_x, dim_y int = 25, 25
 	var maze [][]string
 
 	/* Get size of array from user args */
 	flag.IntVar(&dim_x, "x", dim_x, "X dimension of maze to be generated")
 	flag.IntVar(&dim_y, "y", dim_y, "Y dimension of maze to be generated")
+	g_show_gen = flag.Bool("s", false, "Show maze being generated")
+
 	flag.Parse()
 
 	/** Initialize memory for array */

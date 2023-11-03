@@ -12,10 +12,43 @@ Cool resource for future go projects https://www.digitalocean.com/community/tuto
 ## Requirements
 
 ## Usage
-```sh
-# Generate a default maze of 51 by 51
-./maze-gen
+Usage of ./maze-gen:
+  -s	Show maze being generated
+  -x int
+    	X dimension of maze to be generated (default 25)
+  -y int
+    	Y dimension of maze to be generated (default 25)
 
+```sh
+# Generate a default maze 
+```sh
+# # # # # # # # # # # # # # # # # # # # # # # # # 
+# >     #       #       #                   #   # 
+#   #   #   #   #   #   # # # # # # # # #   #   # 
+#   #   #   #   #   #                   #     X # 
+#   # # #   #   #   # # # # # # #   # # # # #   # 
+#       #   #   #   #   #       #               # 
+#   #   # # #   #   #   #   #   # # # # # # # # # 
+#   #   #       #       #   #   #               # 
+#   #   #   # # # # #   #   #   #   # # # # # # # 
+#   #           #       #   #   #       #       # 
+#   # # # # #   #   # # #   #   # # #   #   #   # 
+#   #       #   #   #       #           #   #   # 
+#   #   #   #   #   #   # # # # # # # # #   #   # 
+#       #   #       #   #       #   #       #   # 
+#   # # #   # # # # #   # # #   #   #   # # #   # 
+#       #   #           #       #   #   #       # 
+# # #   #   #   #   # # #   # # #   #   #   #   # 
+#   #   #       #           #           #   #   # 
+#   #   # # # # # # #   # # #   # # # # #   #   # 
+#   #   #   #       #   #       #       #   #   # 
+#   #   #   #   #   #   #   # # #   #   #   # # # 
+#   #       #   #   #               #   #       # 
+#   # # # # #   # # # # # # # # # # # # # # #   # 
+#                                               # 
+# # # # # # # # # # # # # # # # # # # # # # # # #
+```
+ 
 # Generate a maze with custom dimensions
 ./maze-gen -x 51 -y 51
 
