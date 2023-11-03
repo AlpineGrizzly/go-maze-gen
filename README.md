@@ -21,7 +21,6 @@ Usage of ./maze-gen:
 
 ```sh
 # Generate a default maze 
-```sh
 # # # # # # # # # # # # # # # # # # # # # # # # # 
 # >     #       #       #                   #   # 
 #   #   #   #   #   #   # # # # # # # # #   #   # 
@@ -47,7 +46,6 @@ Usage of ./maze-gen:
 #   # # # # #   # # # # # # # # # # # # # # #   # 
 #                                               # 
 # # # # # # # # # # # # # # # # # # # # # # # # #
-```
  
 # Generate a maze with custom dimensions
 ./maze-gen -x 51 -y 51
