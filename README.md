@@ -104,3 +104,5 @@ Usage of ./maze-gen:
 #   #           #           #               #       #                       #           #       #   # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ```
+
+Using the arrow keys, you are able to traverse the maze and attempt to solve it
