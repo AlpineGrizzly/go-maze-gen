@@ -226,6 +226,8 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 		}
 	}
 	/* Set the start and end cells  */
+	g_player_loc = start
+	g_goal_loc = end	
 	fmt.Println("Start is ", start, " End is ", end)
 	set_cell(maze, start, ">")
 	set_cell(maze, end, "X")
@@ -244,30 +246,101 @@ func print_maze(maze [][]string, dim_x int, dim_y int) {
 	fmt.Println()
 }
 
+func is_wall(loc coord, maze [][]string) bool { 	
+	maze_cell := maze[loc.x][loc.y]
+	if maze_cell == "#" { 
+		return true
+	}
+	return false
+
+}
+
+func validate_move(new_p_loc coord, maze [][]string) bool {
+	/** Check if its an edge box */
+	if is_edge_box(new_p_loc, g_dim_x, g_dim_y) || is_wall(new_p_loc, maze) { 
+		return false
+	}
+	/** Check if its a wall */	
+	return true 
+}
+// Initialize our global direction values
+var g_k_up byte = 65
+var g_k_down byte = 66
+var g_k_left byte = 68
+var g_k_right byte = 67
+
+func get_move(b []byte, maze [][]string) {	
+	curr_p_loc := g_player_loc
+	new_p_loc := g_player_loc
+
+	os.Stdin.Read(b)
+	if b[0] == 27 { 
+		os.Stdin.Read(b)
+		if b[0] == 91 {
+			switch os.Stdin.Read(b); b[0] { 
+				case g_k_up:
+					new_p_loc = coord{x: curr_p_loc.x, y: curr_p_loc.y - 1}
+				case g_k_down:
+					new_p_loc = coord{x: curr_p_loc.x, y: curr_p_loc.y + 1}
+				case g_k_left:
+					new_p_loc = coord{x: curr_p_loc.x - 1, y: curr_p_loc.y}
+				case g_k_right:
+					new_p_loc = coord{x: curr_p_loc.x + 1, y: curr_p_loc.y}
+			}
+			if validate_move(new_p_loc, maze) {  
+				// Update new player location
+				maze[curr_p_loc.x][curr_p_loc.y] = " "
+				maze[new_p_loc.x][new_p_loc.y] = ">"
+				g_player_loc = new_p_loc		
+			}
+		}
+	}
+
+}
+
 /* Global Variables */
 var g_show_gen *bool
+var g_player_loc coord
+var g_goal_loc coord
+var g_dim_x, g_dim_y int = 25, 25
 
 func main() {
-	var dim_x, dim_y int = 25, 25
 	var maze [][]string
 
 	/* Get size of array from user args */
-	flag.IntVar(&dim_x, "x", dim_x, "X dimension of maze to be generated")
-	flag.IntVar(&dim_y, "y", dim_y, "Y dimension of maze to be generated")
+	flag.IntVar(&g_dim_x, "x", g_dim_x, "X dimension of maze to be generated")
+	flag.IntVar(&g_dim_y, "y", g_dim_y, "Y dimension of maze to be generated")
 	g_show_gen = flag.Bool("s", false, "Show maze being generated")
 
 	flag.Parse()
 
 	/** Initialize memory for array */
-	maze = make([][]string, dim_x)
+	maze = make([][]string, g_dim_x)
 	for i := range maze {
-		maze[i] = make([]string, dim_y)
+		maze[i] = make([]string, g_dim_y)
 	}
 
 	/** Generate the maze */
-	generate_maze(maze, dim_x, dim_y)
-
-	print_maze(maze, dim_x, dim_y)
+	generate_maze(maze, g_dim_x, g_dim_y)
 
 	/** Main loop that will allow the player to traverse the maze */
+	// disable input buffering
+	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
+	// do not display entered characters on the screen
+	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+
+	var b []byte = make([]byte, 1)
+
+	solved := false /** Bool for whether the maze has been solved by the player or not */
+	for !solved { 
+		clear_screen()
+		print_maze(maze, g_dim_x, g_dim_y)
+		get_move(b, maze) /* Get player move and update the maze */	
+		if g_player_loc == g_goal_loc { 
+			solved = true
+			fmt.Println("You win!")
+			break
+		}
+	}
+	exec.Command("stty", "-F", "/dev/tty", "sane").Run() /** Reset stty */
 }

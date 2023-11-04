@@ -4,8 +4,9 @@ Go Program that generates mazes
 Cool resource for future go projects https://www.digitalocean.com/community/tutorials/how-to-build-and-install-go-programs
 
 ## BUGS
+- [ ] Really small mazes look weird as hell 
+- [ ] Need to make sure maze goals are as far from the player, sometimes they spawn right in front of the player if the maze is small enough
 ## TODO                                     
-- [ ] Allow for a player to be able to solve the mazes
 - [ ] Implement other maze generation algorithms that can be selected with a flag
 - [ ] Possible add an enemy to the maze the attempts to catch the player, pac man style
 
