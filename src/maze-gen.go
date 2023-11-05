@@ -43,6 +43,11 @@ func dequeue(queue []coord) (coord, []coord) {
 /**
  * is_visited
  *
+ * Given an array of visited elements and a cell, return a boolean on whether it is present in the array or not
+ *
+ * @param visited Coordinate array of visited cells 
+ * @param cell Cell to be checked for presence in visited array
+ *
  * Returns true if a cell is visited, false otherwise
  */
 func is_visited(visited []coord, cell coord) bool {
@@ -54,7 +59,16 @@ func is_visited(visited []coord, cell coord) bool {
 	return false
 }
 
-/** Gets wall between two cells */
+/**
+ * get_wall
+ * 
+ * Get the coordinate value of a wall between two coordinates
+ *
+ * @param host Cell that is used as the base
+ * @param neighbor Neighbor cell of host
+ *
+ * Return the coordinate of the value between the host and neighbor
+ */
 func get_wall(host coord, neighbor coord) coord {
 	wall := coord{x: -1, y: -1}
 
@@ -75,15 +89,24 @@ func get_wall(host coord, neighbor coord) coord {
 	return wall /* Return the coordinates of the host if no walls */
 }
 
+/**
+ * clear_screen
+ *
+ * Clears the screen of text
+ */
 func clear_screen() {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
 
-/** Check if the cell is on the boundary of the maze */
-func is_edge_box(cell coord, dim_x int, dim_y int) bool {
-	if cell.x == 0 || cell.x == dim_x-1 || cell.y == 0 || cell.y == dim_y-1 {
+/**
+ * is_edge_box
+ *
+ * Given a cell, return a boolean if the cell is an edge box or not 
+ */
+func is_edge_box(cell coord) bool {
+	if cell.x == 0 || cell.x == g_dim_x-1 || cell.y == 0 || cell.y == g_dim_y-1 {
 		return true
 	}
 	return false
@@ -99,7 +122,7 @@ func is_edge_box(cell coord, dim_x int, dim_y int) bool {
  *
  * @return an unvisited neighbor of the cell passed in and the wall between the two
  */
-func get_unvisited_neighbor(visited []coord, cell coord, dim_x int, dim_y int) (coord, coord) {
+func get_unvisited_neighbor(visited []coord, cell coord) (coord, coord) {
 	neighbors := []coord{}
 	chosen := coord{x: -1, y: -1}
 	wall := coord{x: -1, y: -1}
@@ -109,22 +132,22 @@ func get_unvisited_neighbor(visited []coord, cell coord, dim_x int, dim_y int) (
 	/** (1,0) (-1,0) (0,1) (0,-1) */
 	// Manually checking cause im too lazy to think
 	check_cell := coord{cell.x + wall_size, cell.y}
-	if check_cell.x < dim_x && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
+	if check_cell.x < g_dim_x && !is_visited(visited, check_cell) && !is_edge_box(check_cell) {
 		neighbors = append(neighbors, check_cell)
 	}
 
 	check_cell = coord{cell.x - wall_size, cell.y}
-	if check_cell.x >= 0 && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
+	if check_cell.x >= 0 && !is_visited(visited, check_cell) && !is_edge_box(check_cell) {
 		neighbors = append(neighbors, check_cell)
 	}
 
 	check_cell = coord{cell.x, cell.y + wall_size}
-	if check_cell.y < dim_y && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
+	if check_cell.y < g_dim_y && !is_visited(visited, check_cell) && !is_edge_box(check_cell) {
 		neighbors = append(neighbors, check_cell)
 	}
 
 	check_cell = coord{cell.x, cell.y - wall_size}
-	if check_cell.y >= 0 && !is_visited(visited, check_cell) && !is_edge_box(check_cell, dim_x, dim_y) {
+	if check_cell.y >= 0 && !is_visited(visited, check_cell) && !is_edge_box(check_cell) {
 		neighbors = append(neighbors, check_cell)
 	}
 
@@ -155,7 +178,7 @@ func set_cell(maze [][]string, cell coord, val string) {
  *
  * @param maze Pointer to an array to generate maze
  */
-func generate_maze(maze [][]string, dim_x int, dim_y int) {
+func generate_maze(maze [][]string) {
 	/** Initialize pick at coordinates for beginning and end */
 	rand.Seed(time.Now().UnixNano())
 
@@ -163,8 +186,8 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 	var end coord
 
 	/** Generate maze with start and finish points */
-	for j := 0; j < dim_y; j++ {
-		for i := 0; i < dim_x; i++ {
+	for j := 0; j < g_dim_y; j++ {
+		for i := 0; i < g_dim_x; i++ {
 			maze[i][j] = "#"
 		}
 	}
@@ -189,16 +212,17 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 		visited_cells = append(visited_cells, rand_cell)
 
 		/* Randomly select an adjacent cell of the node that has not been visited */
-		neigh_cell, wall_cell = get_unvisited_neighbor(visited_cells, rand_cell, dim_x, dim_y)
+		neigh_cell, wall_cell = get_unvisited_neighbor(visited_cells, rand_cell)
 
 		/** If all neighbors have been visited */
 		if neigh_cell.x == -1 && neigh_cell.y == -1 {
 			for len(queue) > 0 {
 				// Continue to pop items off the queue until a node is encountered with at least one non visited neighbor
 				rand_cell, queue = dequeue(queue)
+				end = rand_cell
 
 				// Check if rand_cell has neighbors
-				temp_cell, _ = get_unvisited_neighbor(visited_cells, rand_cell, dim_x, dim_y)
+				temp_cell, _ = get_unvisited_neighbor(visited_cells, rand_cell)
 
 				if temp_cell.x != -1 && temp_cell.y != -1 {
 					break
@@ -209,7 +233,6 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 			if len(queue) == 0 {
 				break
 			}
-			end = rand_cell
 			continue
 		}
 
@@ -220,9 +243,11 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 
 		/* Assign the random cell value to the neighbor */
 		rand_cell = neigh_cell
-		if *g_show_gen {
-			print_maze(maze, dim_x, dim_y)
+		if *g_show_gen {		
+			fmt.Println(end)
+			print_maze(maze)	
 			time.Sleep(5 * time.Millisecond)
+			
 		}
 	}
 	/* Set the start and end cells  */
@@ -235,10 +260,10 @@ func generate_maze(maze [][]string, dim_x int, dim_y int) {
 }
 
 /** Print the maze */
-func print_maze(maze [][]string, dim_x int, dim_y int) {
+func print_maze(maze [][]string) {
 	/** Simple print of the maze */
-	for j := 0; j < dim_y; j++ {
-		for i := 0; i < dim_x; i++ {
+	for j := 0; j < g_dim_y; j++ {
+		for i := 0; i < g_dim_x; i++ {
 			fmt.Print(maze[i][j], " ")
 		}
 		fmt.Println()
@@ -257,7 +282,7 @@ func is_wall(loc coord, maze [][]string) bool {
 
 func validate_move(new_p_loc coord, maze [][]string) bool {
 	/** Check if its an edge box */
-	if is_edge_box(new_p_loc, g_dim_x, g_dim_y) || is_wall(new_p_loc, maze) { 
+	if is_edge_box(new_p_loc) || is_wall(new_p_loc, maze) { 
 		return false
 	}
 	/** Check if its a wall */	
@@ -299,20 +324,27 @@ func get_move(b []byte, maze [][]string) {
 }
 
 /* Global Variables */
-var g_show_gen *bool
-var g_player_loc coord
-var g_goal_loc coord
-var g_dim_x, g_dim_y int = 25, 25
+var g_show_gen *bool			   /* Boolean flag for showing maze geneation if enabled */
+var g_player_loc coord			   /* Starting location of the player in the maze */
+var g_goal_loc coord			   /* Goal location of the player */
+var g_dim_x, g_dim_y int = 25, 25  /* X and Y dimensions of Maze to be generated */
+var MIN_SIZE int = 5 			   /* Minimum value of maze size */
 
 func main() {
 	var maze [][]string
 
 	/* Get size of array from user args */
-	flag.IntVar(&g_dim_x, "x", g_dim_x, "X dimension of maze to be generated")
-	flag.IntVar(&g_dim_y, "y", g_dim_y, "Y dimension of maze to be generated")
+	flag.IntVar(&g_dim_x, "x", g_dim_x, "X dimension of maze to be generated (Minimum x dim is 5)")
+	flag.IntVar(&g_dim_y, "y", g_dim_y, "Y dimension of maze to be generated (Minimum y dim is 5)")
 	g_show_gen = flag.Bool("s", false, "Show maze being generated")
-
 	flag.Parse()
+
+	/** Check minimum requirement to generate a maze */
+	if g_dim_x < MIN_SIZE || g_dim_y < MIN_SIZE {
+		fmt.Println("Usage of ./maze-gen:")
+		flag.PrintDefaults()
+		os.Exit(0)	
+	}	
 
 	/** Initialize memory for array */
 	maze = make([][]string, g_dim_x)
@@ -321,7 +353,7 @@ func main() {
 	}
 
 	/** Generate the maze */
-	generate_maze(maze, g_dim_x, g_dim_y)
+	generate_maze(maze)
 
 	/** Main loop that will allow the player to traverse the maze */
 	// disable input buffering
@@ -333,14 +365,14 @@ func main() {
 
 	solved := false /** Bool for whether the maze has been solved by the player or not */
 	for !solved { 
-		clear_screen()
-		print_maze(maze, g_dim_x, g_dim_y)
+		print_maze(maze)
 		get_move(b, maze) /* Get player move and update the maze */	
 		if g_player_loc == g_goal_loc { 
 			solved = true
 			fmt.Println("You win!")
 			break
 		}
+		clear_screen()
 	}
 	exec.Command("stty", "-F", "/dev/tty", "sane").Run() /** Reset stty */
 }
