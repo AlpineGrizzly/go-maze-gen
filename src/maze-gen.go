@@ -293,6 +293,7 @@ var g_k_up byte = 65
 var g_k_down byte = 66
 var g_k_left byte = 68
 var g_k_right byte = 67
+var character string 
 
 func get_move(b []byte, maze [][]string) {	
 	curr_p_loc := g_player_loc
@@ -305,17 +306,21 @@ func get_move(b []byte, maze [][]string) {
 			switch os.Stdin.Read(b); b[0] { 
 				case g_k_up:
 					new_p_loc = coord{x: curr_p_loc.x, y: curr_p_loc.y - 1}
+                    character = "V"
 				case g_k_down:
 					new_p_loc = coord{x: curr_p_loc.x, y: curr_p_loc.y + 1}
+                    character = "Λ"
 				case g_k_left:
 					new_p_loc = coord{x: curr_p_loc.x - 1, y: curr_p_loc.y}
+                    character = ">"
 				case g_k_right:
 					new_p_loc = coord{x: curr_p_loc.x + 1, y: curr_p_loc.y}
+                    character = "<"
 			}
 			if validate_move(new_p_loc, maze) {  
 				// Update new player location
 				maze[curr_p_loc.x][curr_p_loc.y] = " "
-				maze[new_p_loc.x][new_p_loc.y] = ">"
+				maze[new_p_loc.x][new_p_loc.y] = character
 				g_player_loc = new_p_loc		
 			}
 		}
